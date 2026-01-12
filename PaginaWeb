@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JS Construcción & Remodelación</title>
+
+<style>
+:root{
+    --azul:#1f3b4d;
+    --naranja:#f28c28;
+    --gris:#f5f5f5;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",Arial,sans-serif;}
+body{color:#333;line-height:1.6;}
+header{
+    background:#fff;border-bottom:2px solid var(--gris);
+    padding:15px 40px;display:flex;justify-content:space-between;align-items:center;
+}
+header strong{color:var(--azul);font-size:22px;}
+nav a{margin-left:20px;text-decoration:none;color:var(--azul);font-weight:500;}
+nav a:hover{color:var(--naranja);}
+
+.hero{
+    background:linear-gradient(rgba(31,59,77,.7),rgba(31,59,77,.7)),
+    url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c") center/cover;
+    color:#fff;padding:100px 40px;
+}
+.hero h1{font-size:44px;max-width:650px;}
+.hero p{margin:20px 0;max-width:520px;}
+
+.btn{
+    background:var(--naranja);color:#fff;padding:12px 28px;border-radius:6px;
+    font-weight:600;border:none;cursor:pointer;text-decoration:none;display:inline-block;
+}
+
+section{padding:70px 40px;max-width:1200px;margin:auto;}
+section h2{text-align:center;color:var(--azul);font-size:34px;margin-bottom:40px;}
+
+.about{
+    display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;
+}
+
+.services{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:30px;
+}
+.card{
+    background:#fff;border-radius:10px;padding:30px;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
+    text-align:center;
+}
+.card img{width:100%;border-radius:8px;margin-bottom:15px;}
+.card h3{color:var(--azul);margin-bottom:10px;}
+
+.why{background:var(--gris);}
+.why ul{max-width:850px;margin:auto;list-style:none;}
+.why li{margin-bottom:15px;padding-left:25px;position:relative;}
+.why li::before{content:"✔";position:absolute;left:0;color:var(--naranja);}
+
+.form-container{
+    max-width:700px;margin:auto;background:#fff;padding:40px;border-radius:10px;
+    box-shadow:0 4px 20px rgba(0,0,0,.1);
+}
+form{display:grid;gap:15px;}
+input,select,textarea{padding:12px;border:1px solid #ccc;border-radius:6px;font-size:15px;}
+textarea{resize:none;height:120px;}
+
+footer{background:var(--azul);color:#fff;text-align:center;padding:25px;margin-top:40px;}
+
+@media(max-width:768px){
+    header{flex-direction:column}
+    nav{margin-top:10px}
+    .hero h1{font-size:34px}
+    .about{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <strong>JS Construcción & Remodelación</strong>
+    <nav>
+        <a href="#inicio">Inicio</a>
+        <a href="#servicios">Servicios</a>
+        <a href="#proyectos">Portafolio</a>
+        <a href="#cotizacion">Cotización</a>
+    </nav>
+</header>
+
+<section class="hero" id="inicio">
+    <h1>Construye tu futuro. Remodela con nosotros.</h1>
+    <p>Expertos en construcción y remodelación en Bogotá y todas las ciudades de Colombia. Calidad, cumplimiento y confianza.</p>
+    <a href="#cotizacion" class="btn">Solicitar cotización</a>
+</section>
+
+<section id="nosotros">
+    <h2>¿Quiénes somos?</h2>
+    <div class="about">
+        <p>
+            JS Construcción & Remodelación se dedica a la ejecución de proyectos de construcción,
+            remodelación y adecuación de espacios residenciales y comerciales.
+            <br><br>
+            Trabajamos con calidad, transparencia y acompañamiento constante desde la planeación
+            hasta la entrega final.
+        </p>
+        <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e" alt="Equipo de construcción" style="width:100%;border-radius:10px;">
+    </div>
+</section>
+
+<section id="servicios">
+    <h2>Servicios</h2>
+    <div class="services">
+        <div class="card"><h3>Construcción</h3><p>Viviendas, ampliaciones y obra estructural.</p></div>
+        <div class="card"><h3>Remodelaciones</h3><p>Baños, cocinas y espacios completos.</p></div>
+        <div class="card"><h3>Acabados</h3><p>Pisos, enchapes, pintura, drywall y detalles.</p></div>
+        <div class="card"><h3>Mantenimiento</h3><p>Correcciones, reparaciones y mejoras locativas.</p></div>
+    </div>
+</section>
+
+<section id="proyectos">
+    <h2>Portafolio</h2>
+    <p style="text-align:center;max-width:800px;margin:0 auto 35px;">
+        Algunos de nuestros trabajos realizados en Bogotá y otras ciudades del país.
+        (Aquí puedes reemplazar estas imágenes por tus fotos reales).
+    </p>
+
+    <div class="services">
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a" alt="Proyecto baño">
+            <h3>Remodelación de baño</h3>
+            <p>Bogotá · Enchapes, grifería y acabados.</p>
+        </div>
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1600121848594-d8644e57abab" alt="Proyecto cocina">
+            <h3>Cocina integral</h3>
+            <p>Bogotá · Diseño, muebles y mesón.</p>
+        </div>
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1600585154084-4e5fe7c39198" alt="Proyecto integral">
+            <h3>Remodelación integral</h3>
+            <p>Apartamento completo · Obra blanca.</p>
+        </div>
+    </div>
+</section>
+
+<section class="why" id="proceso">
+    <h2>Proceso de trabajo</h2>
+    <ul>
+        <li>Diagnóstico y visita técnica (o revisión remota con fotos/medidas).</li>
+        <li>Cotización clara y detallada (materiales y mano de obra según el caso).</li>
+        <li>Inicio de obra con <strong>50% del valor</strong> para programación y materiales.</li>
+        <li>Ejecución con supervisión y comunicación constante.</li>
+        <li>Entrega final y pago del <strong>50% restante</strong>.</li>
+    </ul>
+</section>
+
+<section id="garantia">
+    <h2>Garantía y cobertura</h2>
+    <div class="services">
+        <div class="card">
+            <h3>Garantía</h3>
+            <p>Todos nuestros trabajos cuentan con garantía en mano de obra y acabados, respaldando la calidad del proyecto.</p>
+        </div>
+        <div class="card">
+            <h3>Forma de pago 50/50</h3>
+            <p><strong>50% al iniciar</strong><br><strong>50% al finalizar y entregar la obra</strong></p>
+        </div>
+        <div class="card">
+            <h3>Cobertura nacional</h3>
+            <p>Atendemos <strong>todas las ciudades de Colombia</strong>. Nuestra operación principal está en <strong>Bogotá</strong>.</p>
+        </div>
+    </div>
+</section>
+
+<section id="cotizacion">
+    <h2>Solicita tu cotización</h2>
+    <div class="form-container">
+        <form id="cotizacionForm">
+            <input type="text" id="nombre" placeholder="Nombre completo" required>
+            <input type="tel" id="telefono" placeholder="WhatsApp / Teléfono" required>
+            <select id="servicio" required>
+                <option value="">Tipo de servicio</option>
+                <option>Construcción</option>
+                <option>Remodelación</option>
+                <option>Acabados</option>
+                <option>Mantenimiento</option>
+            </select>
+            <input type="text" id="ciudad" placeholder="Ciudad (ej: Bogotá)">
+            <textarea id="mensaje" placeholder="Describe tu proyecto (medidas, tipo de espacio, etc.)"></textarea>
+            <button type="submit" class="btn">Enviar por WhatsApp</button>
+        </form>
+    </div>
+</section>
+
+<footer>
+    © 2026 JS Construcción & Remodelación · Todos los derechos reservados
+</footer>
+
+<!-- BOTÓN WHATSAPP -->
+<a href="https://wa.me/573208624097"
+style="position:fixed;bottom:20px;right:20px;background:#25D366;color:#fff;padding:15px 22px;border-radius:50px;font-weight:bold;text-decoration:none;box-shadow:0 4px 10px rgba(0,0,0,.3);z-index:1000;">
+WhatsApp
+</a>
+
+<script>
+document.getElementById("cotizacionForm").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const nombre = document.getElementById("nombre").value.trim();
+    const telefono = document.getElementById("telefono").value.trim();
+    const servicio = document.getElementById("servicio").value.trim();
+    const ciudad = document.getElementById("ciudad").value.trim() || "Bogotá";
+    const mensaje = document.getElementById("mensaje").value.trim();
+
+    const texto =
+`📋 *Nueva solicitud de cotización*%0A
+👤 Nombre: ${encodeURIComponent(nombre)}%0A
+📞 Teléfono: ${encodeURIComponent(telefono)}%0A
+🏗️ Servicio: ${encodeURIComponent(servicio)}%0A
+📍 Ciudad: ${encodeURIComponent(ciudad)}%0A
+📝 Proyecto: ${encodeURIComponent(mensaje)}`;
+
+    window.open(`https://wa.me/573208624097?text=${texto}`, "_blank");
+    this.reset();
+});
+</script>
+
+</body>
+</html>
