@@ -282,6 +282,117 @@ video::-webkit-media-controls-mute-button {
 #equipo .card:last-child {
     border-top: 6px solid var(--naranja);
 }
+/* ================================
+   AJUSTES RESPONSIVE GENERALES
+================================ */
+
+/* Mejora lectura global */
+body {
+    font-size: 16px;
+}
+
+/* Secciones más respiradas en móvil */
+@media (max-width: 768px) {
+
+    section {
+        padding: 60px 20px;
+    }
+
+    /* Header */
+    header {
+        padding: 15px 20px;
+    }
+
+    nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    nav a {
+        margin: 0;
+        font-size: 15px;
+    }
+
+    /* Hero */
+    .hero {
+        padding: 80px 20px;
+        text-align: center;
+    }
+
+    .hero h1 {
+        font-size: 30px;
+        line-height: 1.25;
+    }
+
+    .hero p {
+        font-size: 16px;
+        margin: 18px auto;
+    }
+
+    /* About */
+    .about {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    /* Cards */
+    .card {
+        padding: 25px 20px;
+    }
+
+    .card h3 {
+        font-size: 20px;
+    }
+
+    .card p {
+        font-size: 15px;
+        line-height: 1.5;
+    }
+
+    /* Services grid */
+    .services {
+        grid-template-columns: 1fr;
+    }
+
+    /* Carrusel */
+    .carousel {
+        gap: 12px;
+    }
+
+    .carousel > * {
+        width: 90%;
+    }
+
+    .carousel img,
+    .carousel video {
+        max-height: 360px;
+    }
+
+    /* Location tag */
+    .location-tag {
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+    /* Formulario */
+    .form-container {
+        padding: 30px 20px;
+    }
+
+    input,
+    select,
+    textarea {
+        font-size: 16px;
+    }
+
+    /* Footer */
+    footer {
+        font-size: 14px;
+        padding: 20px;
+    }
+}
 
 </style>
 </head>
