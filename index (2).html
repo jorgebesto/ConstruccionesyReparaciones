@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JS Construcción & Remodelación</title>
+<link rel="icon" type="image/png" href="Imagenes/WhatsApp Image 2026-01-12 at 12.34.19 AM.jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   TOKENS & RESET
+============================================================ */
+:root {
+  --c-dark:    #0e1113;
+  --c-mid:     #1a1f24;
+  --c-panel:   #20282e;
+  --c-border:  rgba(255,255,255,.07);
+  --c-text:    #e8e4de;
+  --c-muted:   #7a8290;
+  --c-accent:  #f28c28;
+  --c-accent2: #1f3b4d;
+  --c-white:   #ffffff;
+  --ff-display: 'Bebas Neue', sans-serif;
+  --ff-body:    'DM Sans', sans-serif;
+  --ease: cubic-bezier(.25,.46,.45,.94);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--ff-body);
+  background: var(--c-dark);
+  color: var(--c-text);
+  line-height: 1.65;
+  font-size: 16px;
+  overflow-x: hidden;
+}
+
+img, video { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+
+/* ============================================================
+   NOISE OVERLAY
+============================================================ */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: .5;
+}
+
+/* ============================================================
+   ACCENT LINE — left edge
+============================================================ */
+body::after {
+  content: "";
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, transparent 0%, var(--c-accent) 30%, var(--c-accent2) 70%, transparent 100%);
+  z-index: 100;
+}
+
+/* ============================================================
+   UTILITIES
+============================================================ */
+.container { max-width: 1160px; margin: auto; padding: 0 40px; }
+.tag {
+  display: inline-block;
+  font-family: var(--ff-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  border: 1px solid var(--c-accent);
+  padding: 5px 14px;
+  border-radius: 2px;
+}
+
+/* REVEAL ANIMATION */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity .7s var(--ease), transform .7s var(--ease);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ============================================================
+   HEADER
+============================================================ */
+header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  padding: 0 40px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(14,17,19,.85);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--c-border);
+  transition: background .3s;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand img {
+  width: 40px; height: 40px;
+  border-radius: 6px;
+  object-fit: contain;
+}
+.brand-name {
+  font-family: var(--ff-display);
+  font-size: 20px;
+  letter-spacing: .04em;
+  color: var(--c-white);
+  line-height: 1;
+}
+.brand-name span { color: var(--c-accent); }
+
+nav { display: flex; align-items: center; gap: 36px; }
+nav a {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  position: relative;
+  transition: color .25s;
+}
+nav a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px; left: 0;
+  width: 0; height: 2px;
+  background: var(--c-accent);
+  transition: width .3s var(--ease);
+}
+nav a:hover { color: var(--c-white); }
+nav a:hover::after { width: 100%; }
+
+.nav-cta {
+  background: var(--c-accent);
+  color: #fff !important;
+  padding: 10px 22px;
+  border-radius: 3px;
+  font-weight: 600 !important;
+  letter-spacing: .04em !important;
+  transition: background .25s, transform .2s !important;
+}
+.nav-cta::after { display: none !important; }
+.nav-cta:hover { background: #e67e1f !important; transform: translateY(-1px); }
+
+/* ============================================================
+   HERO
+============================================================ */
+#inicio {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  padding-top: 72px;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(14,17,19,.96) 45%, rgba(31,59,77,.6) 100%),
+    url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600") center/cover no-repeat;
+}
+
+/* geometric accent */
+.hero-geo {
+  position: absolute;
+  right: -60px; bottom: -60px;
+  width: 520px; height: 520px;
+  border: 1px solid rgba(242,140,40,.12);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.hero-geo::before {
+  content: "";
+  position: absolute;
+  inset: 40px;
+  border: 1px solid rgba(242,140,40,.08);
+  border-radius: 50%;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 2;
+  padding: 100px 40px 120px;
+  max-width: 1160px;
+  margin: auto;
+  width: 100%;
+}
+
+.hero-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: fadeUp .8s var(--ease) .2s forwards;
+}
+.hero-line {
+  width: 48px; height: 2px;
+  background: var(--c-accent);
+}
+.hero-eyebrow-text {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+}
+
+.hero h1 {
+  font-family: var(--ff-display);
+  font-size: clamp(52px, 8vw, 100px);
+  line-height: .95;
+  letter-spacing: .01em;
+  color: var(--c-white);
+  max-width: 760px;
+  opacity: 0;
+  animation: fadeUp .9s var(--ease) .4s forwards;
+}
+.hero h1 em {
+  font-style: normal;
+  color: var(--c-accent);
+}
+
+.hero-sub {
+  margin: 32px 0 48px;
+  max-width: 520px;
+  color: var(--c-muted);
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.7;
+  opacity: 0;
+  animation: fadeUp .9s var(--ease) .6s forwards;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp .9s var(--ease) .8s forwards;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--c-accent);
+  color: #fff;
+  padding: 16px 32px;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: .04em;
+  box-shadow: 0 8px 32px rgba(242,140,40,.25);
+  transition: background .25s, transform .2s, box-shadow .25s;
+}
+.btn-primary:hover {
+  background: #e67e1f;
+  transform: translateY(-2px);
+  box-shadow: 0 14px 40px rgba(242,140,40,.35);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--c-border);
+  color: var(--c-text);
+  padding: 16px 32px;
+  border-radius: 3px;
+  font-weight: 500;
+  font-size: 15px;
+  letter-spacing: .04em;
+  transition: border-color .25s, color .25s, transform .2s;
+}
+.btn-ghost:hover {
+  border-color: rgba(255,255,255,.25);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* hero stats */
+.hero-stats {
+  display: flex;
+  gap: 56px;
+  margin-top: 72px;
+  padding-top: 40px;
+  border-top: 1px solid var(--c-border);
+  opacity: 0;
+  animation: fadeUp .9s var(--ease) 1s forwards;
+}
+.stat-num {
+  font-family: var(--ff-display);
+  font-size: 42px;
+  color: var(--c-white);
+  letter-spacing: .02em;
+}
+.stat-num span { color: var(--c-accent); }
+.stat-label {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  margin-top: 2px;
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(30px); }
+  to   { opacity:1; transform:none; }
+}
+
+/* ============================================================
+   SECTION COMMON
+============================================================ */
+.section {
+  padding: 110px 0;
+}
+
+.section-header {
+  margin-bottom: 64px;
+}
+.section-title {
+  font-family: var(--ff-display);
+  font-size: clamp(38px, 5vw, 64px);
+  line-height: 1;
+  letter-spacing: .02em;
+  color: var(--c-white);
+  margin-top: 16px;
+}
+.section-title em {
+  font-style: normal;
+  color: var(--c-accent);
+}
+
+/* ============================================================
+   NOSOTROS
+============================================================ */
+#nosotros { background: var(--c-mid); }
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.about-img-wrap {
+  position: relative;
+}
+.about-img-wrap img {
+  width: 100%;
+  height: 460px;
+  object-fit: cover;
+  border-radius: 4px;
+  filter: brightness(.85) contrast(1.05);
+}
+.about-img-badge {
+  position: absolute;
+  bottom: -20px;
+  right: -20px;
+  background: var(--c-accent);
+  color: #fff;
+  padding: 22px 28px;
+  border-radius: 4px;
+  font-family: var(--ff-display);
+  font-size: 14px;
+  letter-spacing: .06em;
+  line-height: 1.4;
+}
+.about-img-badge strong {
+  display: block;
+  font-size: 36px;
+  font-family: var(--ff-display);
+  letter-spacing: .02em;
+}
+
+.about-content .section-header { margin-bottom: 28px; }
+.about-body {
+  color: var(--c-muted);
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.8;
+}
+.about-body p + p { margin-top: 18px; }
+
+.about-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 32px;
+}
+.pill {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--c-text);
+  background: var(--c-panel);
+  border: 1px solid var(--c-border);
+  padding: 8px 18px;
+  border-radius: 2px;
+  letter-spacing: .03em;
+}
+
+/* ============================================================
+   EQUIPO
+============================================================ */
+#equipo { background: var(--c-dark); }
+
+.team-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.team-card {
+  background: var(--c-panel);
+  border: 1px solid var(--c-border);
+  border-radius: 4px;
+  padding: 44px 40px;
+  position: relative;
+  overflow: hidden;
+  transition: transform .3s var(--ease), border-color .3s;
+}
+.team-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(242,140,40,.3);
+}
+.team-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.team-card:first-child::before { background: var(--c-accent); }
+.team-card:last-child::before  { background: var(--c-accent2); }
+
+.team-card-num {
+  font-family: var(--ff-display);
+  font-size: 80px;
+  color: var(--c-border);
+  position: absolute;
+  right: 24px; top: 12px;
+  line-height: 1;
+  letter-spacing: -.02em;
+  pointer-events: none;
+}
+
+.team-name {
+  font-family: var(--ff-display);
+  font-size: 32px;
+  color: var(--c-white);
+  letter-spacing: .02em;
+  margin-bottom: 6px;
+}
+.team-role {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  margin-bottom: 20px;
+}
+.team-desc {
+  color: var(--c-muted);
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.75;
+}
+
+/* ============================================================
+   SERVICIOS
+============================================================ */
+#servicios { background: var(--c-mid); }
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--c-border);
+  border: 1px solid var(--c-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.service-item {
+  background: var(--c-panel);
+  padding: 44px 32px;
+  transition: background .3s;
+  cursor: default;
+}
+.service-item:hover {
+  background: var(--c-mid);
+}
+
+.service-icon {
+  width: 48px; height: 48px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(242,140,40,.1);
+  border-radius: 4px;
+  color: var(--c-accent);
+}
+
+.service-name {
+  font-family: var(--ff-display);
+  font-size: 26px;
+  color: var(--c-white);
+  letter-spacing: .02em;
+  margin-bottom: 10px;
+}
+.service-desc {
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--c-muted);
+  line-height: 1.7;
+}
+
+/* ============================================================
+   PORTAFOLIO
+============================================================ */
+#proyectos { background: var(--c-dark); }
+
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.portfolio-card {
+  background: var(--c-panel);
+  border: 1px solid var(--c-border);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: transform .3s var(--ease), border-color .3s;
+}
+.portfolio-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(242,140,40,.3);
+}
+
+.carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 0;
+  scrollbar-width: none;
+}
+.carousel::-webkit-scrollbar { display: none; }
+.carousel > * {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+}
+
+.carousel img,
+.carousel video {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  border-radius: 0;
+  background: var(--c-dark);
+}
+
+.portfolio-info {
+  padding: 24px;
+}
+.portfolio-location {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  margin-bottom: 10px;
+}
+.portfolio-location::before {
+  content: "";
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  flex-shrink: 0;
+}
+.portfolio-title {
+  font-family: var(--ff-display);
+  font-size: 22px;
+  color: var(--c-white);
+  letter-spacing: .02em;
+  margin-bottom: 6px;
+}
+.portfolio-sub {
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--c-muted);
+}
+
+/* carousel nav dots */
+.carousel-wrap { position: relative; }
+.carousel-dots {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  padding: 12px 0 0;
+}
+.dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--c-border);
+  cursor: pointer;
+  transition: background .2s, transform .2s;
+}
+.dot.active { background: var(--c-accent); transform: scale(1.3); }
+
+/* ============================================================
+   PROCESO
+============================================================ */
+#proceso { background: var(--c-mid); }
+
+.process-list {
+  counter-reset: step;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  background: var(--c-border);
+  border: 1px solid var(--c-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.process-item {
+  background: var(--c-panel);
+  padding: 36px 32px;
+  counter-increment: step;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  transition: background .3s;
+}
+.process-item:hover { background: var(--c-mid); }
+
+.process-num {
+  font-family: var(--ff-display);
+  font-size: 48px;
+  color: rgba(242,140,40,.18);
+  line-height: 1;
+  flex-shrink: 0;
+  width: 40px;
+}
+.process-num::before { content: counter(step, decimal-leading-zero); }
+
+.process-text {
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--c-muted);
+  line-height: 1.7;
+  padding-top: 6px;
+}
+.process-text strong { color: var(--c-text); font-weight: 600; }
+
+/* ============================================================
+   GARANTIA
+============================================================ */
+#garantia { background: var(--c-dark); }
+
+.guarantee-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.guarantee-card {
+  border: 1px solid var(--c-border);
+  border-radius: 4px;
+  padding: 44px 36px;
+  background: var(--c-panel);
+  transition: border-color .3s, transform .3s;
+}
+.guarantee-card:hover {
+  border-color: rgba(242,140,40,.3);
+  transform: translateY(-4px);
+}
+.guarantee-card-icon {
+  width: 52px; height: 52px;
+  border-radius: 4px;
+  background: rgba(242,140,40,.1);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--c-accent);
+  margin-bottom: 24px;
+}
+.guarantee-card-title {
+  font-family: var(--ff-display);
+  font-size: 24px;
+  color: var(--c-white);
+  letter-spacing: .02em;
+  margin-bottom: 14px;
+}
+.guarantee-card-body {
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--c-muted);
+  line-height: 1.75;
+}
+.guarantee-card-body strong { color: var(--c-text); font-weight: 600; }
+
+/* ============================================================
+   COTIZACIÓN
+============================================================ */
+#cotizacion { background: var(--c-mid); }
+
+.form-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.form-left {}
+.form-left-body {
+  color: var(--c-muted);
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.8;
+  margin-top: 24px;
+  margin-bottom: 36px;
+}
+
+.contact-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--c-border);
+  color: var(--c-muted);
+  font-size: 15px;
+}
+.contact-row:last-child { border-bottom: none; }
+.contact-icon {
+  width: 40px; height: 40px;
+  border-radius: 4px;
+  background: rgba(242,140,40,.1);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--c-accent);
+  flex-shrink: 0;
+}
+
+.form-right {
+  background: var(--c-panel);
+  border: 1px solid var(--c-border);
+  border-radius: 4px;
+  padding: 44px 40px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.form-grid .full { grid-column: 1 / -1; }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.field label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+.field input,
+.field select,
+.field textarea {
+  background: var(--c-dark);
+  border: 1px solid var(--c-border);
+  border-radius: 3px;
+  color: var(--c-text);
+  font-family: var(--ff-body);
+  font-size: 15px;
+  padding: 13px 16px;
+  outline: none;
+  transition: border-color .25s;
+  -webkit-appearance: none;
+}
+.field select option { background: var(--c-dark); }
+.field textarea { resize: none; height: 110px; }
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--c-accent);
+}
+.field input::placeholder,
+.field textarea::placeholder { color: var(--c-muted); }
+
+.form-submit {
+  margin-top: 20px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--c-accent);
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  font-family: var(--ff-body);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  padding: 16px;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(242,140,40,.25);
+  transition: background .25s, transform .2s, box-shadow .25s;
+}
+.form-submit:hover {
+  background: #e67e1f;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 32px rgba(242,140,40,.35);
+}
+
+/* ============================================================
+   FOOTER
+============================================================ */
+footer {
+  background: var(--c-dark);
+  border-top: 1px solid var(--c-border);
+  padding: 36px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.footer-brand {
+  font-family: var(--ff-display);
+  font-size: 18px;
+  color: var(--c-white);
+  letter-spacing: .04em;
+}
+.footer-brand span { color: var(--c-accent); }
+
+.footer-copy {
+  font-size: 13px;
+  color: var(--c-muted);
+}
+
+/* ============================================================
+   WHATSAPP FLOAT
+============================================================ */
+.wa-float {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #25D366;
+  color: #fff;
+  padding: 14px 22px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: .03em;
+  box-shadow: 0 6px 24px rgba(37,211,102,.35);
+  transition: transform .25s, box-shadow .25s;
+}
+.wa-float:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 32px rgba(37,211,102,.45);
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media (max-width: 960px) {
+  .about-grid,
+  .form-wrap { grid-template-columns: 1fr; gap: 48px; }
+  .team-grid,
+  .guarantee-grid { grid-template-columns: 1fr 1fr; }
+  .services-grid { grid-template-columns: 1fr 1fr; }
+  .portfolio-grid { grid-template-columns: 1fr; }
+  .process-list { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .container { padding: 0 20px; }
+  header { padding: 0 20px; }
+  nav { gap: 18px; }
+  nav a { font-size: 12px; }
+  .hero-inner { padding: 80px 20px 100px; }
+  .hero-stats { gap: 32px; }
+  .section { padding: 80px 0; }
+  .team-grid,
+  .guarantee-grid,
+  .services-grid { grid-template-columns: 1fr; }
+  .about-img-badge { bottom: 0; right: 0; }
+  footer { flex-direction: column; align-items: flex-start; }
+  .form-grid { grid-template-columns: 1fr; }
+  body::after { display: none; }
+}
+
+@media (max-width: 520px) {
+  nav .nav-cta { display: none; }
+  .hero h1 { font-size: 42px; }
+  .hero-stats { flex-direction: column; gap: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ========================================================
+     HEADER
+======================================================== -->
+<header>
+  <div class="brand">
+    <img src="Imagenes/WhatsApp Image 2026-01-12 at 12.34.19 AM.jpeg" alt="Logo JS">
+    <span class="brand-name">JS <span>Construcción</span></span>
+  </div>
+  <nav>
+    <a href="#inicio">Inicio</a>
+    <a href="#servicios">Servicios</a>
+    <a href="#proyectos">Portafolio</a>
+    <a href="#cotizacion" class="nav-cta">Cotizar</a>
+  </nav>
+</header>
+
+
+<!-- ========================================================
+     HERO
+======================================================== -->
+<section id="inicio">
+  <div class="hero-bg"></div>
+  <div class="hero-geo"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">
+      <div class="hero-line"></div>
+      <span class="hero-eyebrow-text">Bogotá & toda Colombia</span>
+    </div>
+
+    <h1>Construimos<br>lo que <em>imaginas.</em></h1>
+
+    <p class="hero-sub">
+      Especialistas en construcción, remodelación y adecuaciones locativas.
+      Calidad, cumplimiento y supervisión en cada etapa del proyecto.
+    </p>
+
+    <div class="hero-actions">
+      <a href="#cotizacion" class="btn-primary">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92V19a2 2 0 01-2.18 2 19.8 19.8 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3.07-8.67A2 2 0 014.11 2h2.08a2 2 0 012 1.72 12.8 12.8 0 00.7 2.81 2 2 0 01-.45 2.11l-.88.88a16 16 0 006 6l.88-.88a2 2 0 012.11-.45 12.8 12.8 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+        Solicitar cotización
+      </a>
+      <a href="#proyectos" class="btn-ghost">
+        Ver portafolio
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">10<span>+</span></div>
+        <div class="stat-label">Años de experiencia</div>
+      </div>
+      <div>
+        <div class="stat-num">100<span>%</span></div>
+        <div class="stat-label">Proyectos entregados</div>
+      </div>
+      <div>
+        <div class="stat-num">50<span>+</span></div>
+        <div class="stat-label">Clientes satisfechos</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ========================================================
+     NOSOTROS
+======================================================== -->
+<section id="nosotros" class="section">
+  <div class="container">
+    <div class="about-grid">
+
+      <div class="about-img-wrap reveal">
+        <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=900" alt="Obra">
+        <div class="about-img-badge">
+          <strong>+10</strong>
+          años de<br>experiencia
+        </div>
+      </div>
+
+      <div class="about-content reveal" style="transition-delay:.15s">
+        <div class="section-header">
+          <span class="tag">¿Quiénes somos?</span>
+          <h2 class="section-title">Calidad que se<br><em>ve y se siente.</em></h2>
+        </div>
+        <div class="about-body">
+          <p>
+            JS Construcción & Remodelación es una empresa especializada en proyectos
+            de construcción, remodelación y adecuaciones locativas para vivienda y comercio.
+          </p>
+          <p>
+            Ofrecemos soluciones funcionales, estéticas y duraderas, trabajando con
+            materiales de calidad, mano de obra calificada y supervisión constante
+            en cada etapa del proceso.
+          </p>
+        </div>
+        <div class="about-pills">
+          <span class="pill">Construcción</span>
+          <span class="pill">Remodelación</span>
+          <span class="pill">Drywall</span>
+          <span class="pill">Acabados</span>
+          <span class="pill">Mantenimiento</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ========================================================
+     EQUIPO
+======================================================== -->
+<section id="equipo" class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="tag">El equipo</span>
+      <h2 class="section-title">Representantes<br><em>de la empresa.</em></h2>
+    </div>
+
+    <div class="team-grid">
+
+      <div class="team-card reveal">
+        <div class="team-card-num">01</div>
+        <div class="team-name">Jorge Suárez</div>
+        <div class="team-role">Representante · Maestro general</div>
+        <p class="team-desc">
+          Representante de la empresa y maestro general de obra, encargado de la
+          planificación, coordinación y supervisión integral de los proyectos.
+          Atiende directamente cada etapa del proceso constructivo, asegurando
+          el cumplimiento técnico, la calidad de los acabados y la correcta
+          ejecución de la obra.
+        </p>
+      </div>
+
+      <div class="team-card reveal" style="transition-delay:.12s">
+        <div class="team-card-num">02</div>
+        <div class="team-name">Julián Suárez</div>
+        <div class="team-role">Especialista en obra liviana</div>
+        <p class="team-desc">
+          Especialista en sistemas livianos de construcción, con énfasis en
+          drywall, cielos rasos, divisiones interiores y acabados asociados.
+          Responsable de la ejecución técnica de obra liviana, garantizando
+          precisión, funcionalidad y estética en cada proyecto.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ========================================================
+     SERVICIOS
+======================================================== -->
+<section id="servicios" class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="tag">Lo que hacemos</span>
+      <h2 class="section-title">Nuestros<br><em>servicios.</em></h2>
+    </div>
+
+    <div class="services-grid reveal" style="transition-delay:.1s">
+
+      <div class="service-item">
+        <div class="service-icon">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <div class="service-name">Construcción</div>
+        <p class="service-desc">Viviendas, ampliaciones y obra estructural con rigor técnico.</p>
+      </div>
+
+      <div class="service-item">
+        <div class="service-icon">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div class="service-name">Remodelación</div>
+        <p class="service-desc">Baños, cocinas y espacios completos transformados.</p>
+      </div>
+
+      <div class="service-item">
+        <div class="service-icon">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="service-name">Acabados</div>
+        <p class="service-desc">Pisos, enchapes, pintura y drywall de alta calidad.</p>
+      </div>
+
+      <div class="service-item">
+        <div class="service-icon">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+        </div>
+        <div class="service-name">Mantenimiento</div>
+        <p class="service-desc">Reparaciones, mejoras locativas y conservación.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ========================================================
+     PORTAFOLIO
+======================================================== -->
+<section id="proyectos" class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="tag">Portafolio</span>
+      <h2 class="section-title">Proyectos<br><em>realizados.</em></h2>
+    </div>
+
+    <div class="portfolio-grid">
+
+      <!-- Proyecto 1 -->
+      <div class="portfolio-card reveal">
+        <div class="carousel-wrap">
+          <div class="carousel" id="c1">
+            <video controls muted playsinline>
+              <source src="Imagenes/Imagenes/Portafolio/VID-20260112-WA0037.mp4" type="video/mp4">
+            </video>
+            <img src="Imagenes/Imagenes/Portafolio/WhatsApp Image 2026-01-12 at 9.19.49 PM.jpeg" alt="">
+            <img src="Imagenes/Imagenes/Portafolio/IMG-20260112-WA0006.jpg" alt="">
+          </div>
+          <div class="carousel-dots" id="d1"></div>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-location">Vega · Cundinamarca</div>
+          <div class="portfolio-title">Diseño y elaboración de mezzanine</div>
+          <p class="portfolio-sub">Estructuración, instalación y acabados.</p>
+        </div>
+      </div>
+
+      <!-- Proyecto 2 -->
+      <div class="portfolio-card reveal" style="transition-delay:.1s">
+        <div class="carousel-wrap">
+          <div class="carousel" id="c2">
+            <img src="Imagenes/Imagenes/Portafolio/IMG-20260112-WA0018.jpg" alt="">
+            <img src="Imagenes/Imagenes/Portafolio/IMG-20260112-WA0019.jpg" alt="">
+            <img src="Imagenes/Imagenes/Portafolio/IMG-20260112-WA0020.jpg" alt="">
+            <img src="Imagenes/Imagenes/Portafolio/IMG-20260112-WA0021.jpg" alt="">
+          </div>
+          <div class="carousel-dots" id="d2"></div>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-location">Bogotá D.C.</div>
+          <div class="portfolio-title">Antepechos en drywall</div>
+          <p class="portfolio-sub">Diseño e instalación en sistemas livianos.</p>
+        </div>
+      </div>
+
+      <!-- Proyecto 3 -->
+      <div class="portfolio-card reveal" style="transition-delay:.2s">
+        <div class="carousel-wrap">
+          <div class="carousel" id="c3">
+            <video controls muted playsinline>
+              <source src="Imagenes/Imagenes/Portafolio/VID-20260112-WA0038.mp4" type="video/mp4">
+            </video>
+            <img src="Imagenes/Imagenes/Portafolio/IMG-20260112-WA0033.jpg" alt="">
+          </div>
+          <div class="carousel-dots" id="d3"></div>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-location">Bogotá D.C.</div>
+          <div class="portfolio-title">Remodelación en drywall</div>
+          <p class="portfolio-sub">Estructura, acabados y pintura.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ========================================================
+     PROCESO
+======================================================== -->
+<section id="proceso" class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="tag">Cómo trabajamos</span>
+      <h2 class="section-title">Proceso de<br><em>trabajo.</em></h2>
+    </div>
+
+    <div class="process-list reveal" style="transition-delay:.1s">
+
+      <div class="process-item">
+        <div class="process-num"></div>
+        <p class="process-text">Evaluación técnica inicial del proyecto y definición de alcances.</p>
+      </div>
+
+      <div class="process-item">
+        <div class="process-num"></div>
+        <p class="process-text">Presentación de cotización <strong>clara, detallada y transparente.</strong></p>
+      </div>
+
+      <div class="process-item">
+        <div class="process-num"></div>
+        <p class="process-text">Inicio de obra con anticipo del <strong>50%</strong> para programación y adquisición de materiales.</p>
+      </div>
+
+      <div class="process-item">
+        <div class="process-num"></div>
+        <p class="process-text">Desarrollo del proyecto con supervisión constante — pago del <strong>30%</strong> en avance.</p>
+      </div>
+
+      <div class="process-item" style="grid-column: 1 / -1">
+        <div class="process-num"></div>
+        <p class="process-text">Entrega final del proyecto con control de calidad y pago del <strong>20%</strong> restante.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ========================================================
+     GARANTÍA
+======================================================== -->
+<section id="garantia" class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="tag">Confianza</span>
+      <h2 class="section-title">Garantía, pago<br><em>y cobertura.</em></h2>
+    </div>
+
+    <div class="guarantee-grid">
+
+      <div class="guarantee-card reveal">
+        <div class="guarantee-card-icon">
+          <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="guarantee-card-title">Garantía</div>
+        <p class="guarantee-card-body">
+          Todos nuestros trabajos cuentan con garantía en mano de obra y acabados,
+          respaldando la correcta ejecución y durabilidad del proyecto entregado.
+        </p>
+      </div>
+
+      <div class="guarantee-card reveal" style="transition-delay:.1s">
+        <div class="guarantee-card-icon">
+          <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        </div>
+        <div class="guarantee-card-title">Forma de pago</div>
+        <p class="guarantee-card-body">
+          <strong>50%</strong> al iniciar · <strong>30%</strong> en avance · <strong>20%</strong> al entregar.<br><br>
+          Los porcentajes pueden ajustarse según el tipo de proyecto y lo acordado
+          contractualmente, buscando siempre la mejor opción para ambas partes.
+        </p>
+      </div>
+
+      <div class="guarantee-card reveal" style="transition-delay:.2s">
+        <div class="guarantee-card-icon">
+          <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+        </div>
+        <div class="guarantee-card-title">Cobertura</div>
+        <p class="guarantee-card-body">
+          Prestamos nuestros servicios en <strong>todas las ciudades de Colombia</strong>,
+          con base de operación principal en <strong>Bogotá D.C.</strong>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ========================================================
+     COTIZACIÓN
+======================================================== -->
+<section id="cotizacion" class="section">
+  <div class="container">
+    <div class="form-wrap">
+
+      <div class="form-left reveal">
+        <span class="tag">Contáctenos</span>
+        <h2 class="section-title" style="margin-top:16px;">Solicita tu<br><em>cotización.</em></h2>
+        <p class="form-left-body">
+          Cuéntanos sobre tu proyecto. Te responderemos directamente por WhatsApp
+          con una cotización detallada y sin compromisos.
+        </p>
+
+        <div class="contact-row">
+          <div class="contact-icon">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M22 16.92V19a2 2 0 01-2.18 2 19.8 19.8 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3.07-8.67A2 2 0 014.11 2h2.08a2 2 0 012 1.72 12.8 12.8 0 00.7 2.81 2 2 0 01-.45 2.11l-.88.88a16 16 0 006 6l.88-.88a2 2 0 012.11-.45 12.8 12.8 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+          </div>
+          <div>
+            <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--c-muted);font-weight:600;margin-bottom:2px;">WhatsApp</div>
+            <div style="color:var(--c-text);font-size:16px;">+57 320 862 4097</div>
+          </div>
+        </div>
+
+        <div class="contact-row">
+          <div class="contact-icon">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+          </div>
+          <div>
+            <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--c-muted);font-weight:600;margin-bottom:2px;">Cobertura</div>
+            <div style="color:var(--c-text);font-size:16px;">Toda Colombia · Base Bogotá</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-right reveal" style="transition-delay:.15s">
+        <form id="cotizacionForm">
+          <div class="form-grid">
+            <div class="field">
+              <label>Nombre</label>
+              <input type="text" id="nombre" placeholder="Tu nombre completo" required>
+            </div>
+            <div class="field">
+              <label>WhatsApp</label>
+              <input type="tel" id="telefono" placeholder="+57 300 000 0000" required>
+            </div>
+            <div class="field">
+              <label>Servicio</label>
+              <select id="servicio" required>
+                <option value="">Selecciona…</option>
+                <option>Construcción</option>
+                <option>Remodelación</option>
+                <option>Acabados</option>
+                <option>Mantenimiento</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Ciudad</label>
+              <input type="text" id="ciudad" placeholder="Ej: Bogotá">
+            </div>
+            <div class="field full">
+              <label>Describe tu proyecto</label>
+              <textarea id="mensaje" placeholder="¿Qué tienes en mente? Cuéntanos los detalles…"></textarea>
+            </div>
+          </div>
+          <button type="submit" class="form-submit">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.93 2C6.455 2 2 6.454 2 11.928c0 1.853.487 3.594 1.34 5.104L2 22l5.12-1.321a9.884 9.884 0 004.81 1.228h.004c5.474 0 9.928-4.454 9.928-9.929C21.862 6.454 17.408 2 11.93 2z"/></svg>
+            Enviar por WhatsApp
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ========================================================
+     FOOTER
+======================================================== -->
+<footer>
+  <div class="footer-brand">JS <span>Construcción</span> & Remodelación</div>
+  <div class="footer-copy">© 2026 · Todos los derechos reservados</div>
+</footer>
+
+
+<!-- WhatsApp float -->
+<a href="https://wa.me/573208624097" class="wa-float" target="_blank" rel="noopener">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.93 2C6.455 2 2 6.454 2 11.928c0 1.853.487 3.594 1.34 5.104L2 22l5.12-1.321a9.884 9.884 0 004.81 1.228h.004c5.474 0 9.928-4.454 9.928-9.929C21.862 6.454 17.408 2 11.93 2z"/></svg>
+  WhatsApp
+</a>
+
+
+<script>
+/* ===== SCROLL REVEAL ===== */
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+revealEls.forEach(el => observer.observe(el));
+
+/* ===== CAROUSEL DOTS ===== */
+function initCarousel(carouselId, dotsId) {
+  const car = document.getElementById(carouselId);
+  const dotsWrap = document.getElementById(dotsId);
+  if (!car || !dotsWrap) return;
+
+  const items = car.children;
+  const count = items.length;
+  if (count <= 1) { dotsWrap.style.display = 'none'; return; }
+
+  for (let i = 0; i < count; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => {
+      car.scrollTo({ left: items[i].offsetLeft, behavior: 'smooth' });
+    });
+    dotsWrap.appendChild(d);
+  }
+
+  car.addEventListener('scroll', () => {
+    const idx = Math.round(car.scrollLeft / car.offsetWidth);
+    dotsWrap.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === idx);
+    });
+  }, { passive: true });
+}
+initCarousel('c1','d1');
+initCarousel('c2','d2');
+initCarousel('c3','d3');
+
+/* ===== FORM ===== */
+document.getElementById("cotizacionForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const n = document.getElementById('nombre').value;
+  const t = document.getElementById('telefono').value;
+  const s = document.getElementById('servicio').value;
+  const c = document.getElementById('ciudad').value || 'Bogotá';
+  const m = document.getElementById('mensaje').value;
+  const texto =
+    `📋 *Nueva solicitud de cotización*%0A%0A` +
+    `👤 *Nombre:* ${encodeURIComponent(n)}%0A` +
+    `📞 *Teléfono:* ${encodeURIComponent(t)}%0A` +
+    `🏗️ *Servicio:* ${encodeURIComponent(s)}%0A` +
+    `📍 *Ciudad:* ${encodeURIComponent(c)}%0A` +
+    `📝 *Proyecto:* ${encodeURIComponent(m)}`;
+  window.open(`https://wa.me/573208624097?text=${texto}`, "_blank");
+  this.reset();
+});
+</script>
+</body>
+</html>
